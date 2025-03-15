@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerShopApp", "ComputerShopApp\ComputerShopApp.csproj", "{F3ABA2A7-4257-2C5E-AF02-FCBF02241752}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerShopDomainLibrary", "ComputerShopDomainLibrary\ComputerShopDomainLibrary.csproj", "{2F624F30-8955-4E92-EE58-99A504D2D1F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3ABA2A7-4257-2C5E-AF02-FCBF02241752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3ABA2A7-4257-2C5E-AF02-FCBF02241752}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3ABA2A7-4257-2C5E-AF02-FCBF02241752}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3ABA2A7-4257-2C5E-AF02-FCBF02241752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F624F30-8955-4E92-EE58-99A504D2D1F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F624F30-8955-4E92-EE58-99A504D2D1F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F624F30-8955-4E92-EE58-99A504D2D1F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F624F30-8955-4E92-EE58-99A504D2D1F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FC545AD8-57F6-4C97-B903-6385BF48C6E4}
+	EndGlobalSection
+EndGlobal
