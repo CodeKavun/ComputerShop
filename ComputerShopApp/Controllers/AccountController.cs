@@ -16,11 +16,6 @@ namespace ComputerShopApp.Controllers
             this.signInManager = signInManager;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         public IActionResult Register() => View();
 
         [HttpPost]
@@ -39,7 +34,7 @@ namespace ComputerShopApp.Controllers
             if (result.Succeeded)
             {
                 await signInManager.SignInAsync(shopUser, false);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -67,10 +62,16 @@ namespace ComputerShopApp.Controllers
             }
 
             var result = await signInManager.PasswordSignInAsync(shopUser, loginUserDTO.Password, loginUserDTO.RememberMe, false);
-            if (result.Succeeded) return RedirectToAction("Index", "Account");
+            if (result.Succeeded) return RedirectToAction("Index", "Home");
             else ModelState.AddModelError(string.Empty, "Username or password is incorrect");
 
             return View(loginUserDTO);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

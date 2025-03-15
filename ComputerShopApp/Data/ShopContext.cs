@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ComputerShopApp.Models.DTO.Admin;
+using ComputerShopApp.Models.DTO.Users;
+using ComputerShopApp.Models.ViewModels.Users;
+using ComputerShopApp.Models.DTO.Roles;
 
 namespace ComputerShopApp.Data
 {

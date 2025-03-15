@@ -1,4 +1,5 @@
 using ComputerShopApp.Data;
+using ComputerShopApp.Profiles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,8 @@ builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
 })
     .AddEntityFrameworkStores<ShopContext>();
 
+builder.Services.AddAutoMapper(typeof(ShopUserProfile), typeof(RoleProfile));
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -24,6 +27,6 @@ app.UseDefaultFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute("default", "{controller=Account}/{action=Register}/{id?}");
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
