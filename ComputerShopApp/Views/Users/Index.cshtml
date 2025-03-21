@@ -25,9 +25,10 @@
                 <td>@user.Email</td>
                 <td>@user.BirthDate</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                    <a asp-action="ChangePassword" asp-route-id="@user.Id">Change Password</a>
-                    <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                    <a asp-action="ChangePassword" asp-route-id="@user.Id">Change Password</a> |
+                    <a asp-action="Delete" asp-route-id="@user.Id">Delete</a> |
+                    <a asp-action="ShowClaims" asp-route-id="@user.Id">Show Claims</a>
                 </td>
             </tr>
         }

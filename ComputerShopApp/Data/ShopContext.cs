@@ -5,6 +5,7 @@ using ComputerShopApp.Models.DTO.Admin;
 using ComputerShopApp.Models.DTO.Users;
 using ComputerShopApp.Models.ViewModels.Users;
 using ComputerShopApp.Models.DTO.Roles;
+using ComputerShopApp.Models.DTO.Shop;
 
 namespace ComputerShopApp.Data
 {

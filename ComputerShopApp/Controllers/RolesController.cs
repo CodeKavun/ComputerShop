@@ -3,6 +3,7 @@ using ComputerShopApp.Data;
 using ComputerShopApp.Models.DTO.Roles;
 using ComputerShopApp.Models.DTO.Users;
 using ComputerShopApp.Models.ViewModels.Roles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace ComputerShopApp.Controllers
             return View(roleDTOs);
         }
 
+        [Authorize(Roles = "admin,manager")]
         public IActionResult Create() => View();
 
         [HttpPost]
@@ -75,6 +77,56 @@ namespace ComputerShopApp.Controllers
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeRoles(ChangeRoleViewModel viewModel)
+        {
+            ShopUser? shopUser = await userManager.FindByIdAsync(viewModel.Id);
+            if (shopUser == null) return NotFound();
+
+            var allRoles = await roleManager.Roles.ToListAsync();
+            var userRoles = await userManager.GetRolesAsync(shopUser);
+
+            if (ModelState.IsValid)
+            {
+                var addedRoles = viewModel.Roles.Except(userRoles);
+                var deletedRoles = userRoles.Except(viewModel.Roles);
+
+                await userManager.AddToRolesAsync(shopUser, addedRoles);
+                await userManager.RemoveFromRolesAsync(shopUser, deletedRoles);
+                return RedirectToAction("UserList");
+            }
+
+            viewModel.AllRoles = allRoles;
+            viewModel.UserRoles = userRoles;
+            viewModel.Email = shopUser.Email;
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null) return NotFound();
+
+            IdentityRole? role = await roleManager.FindByIdAsync(id);
+            if (role == null) return NotFound();
+
+            RoleDTO roleDTO = mapper.Map<RoleDTO>(role);
+            return View(roleDTO);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> ConfirmDelete(string? id)
+        {
+            if (id == null) return NotFound();
+
+            IdentityRole? role = await roleManager.FindByIdAsync(id);
+            if (role == null) return NotFound();
+
+            await roleManager.DeleteAsync(role);
+            return RedirectToAction("Index");
         }
     }
 }

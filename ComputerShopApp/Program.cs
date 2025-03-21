@@ -15,11 +15,36 @@ builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
 })
     .AddEntityFrameworkStores<ShopContext>();
 
+builder.Services.AddAuthentication().AddGoogle(options =>
+{
+    IConfigurationSection googleSection = builder.Configuration.GetSection("Authentication:Google");
+    string clientId = googleSection.GetValue<string>("ClientId")!;
+    string clientSecret = googleSection.GetValue<string>("ClientSecret")!;
+
+    options.ClientId = clientId;
+    options.ClientSecret = clientSecret;
+});
+builder.Services.AddAuthorization(configure =>
+{
+    configure.AddPolicy("managerPolicy", policyBuilder =>
+    {
+        policyBuilder.RequireRole("manager");
+        policyBuilder.RequireAuthenticatedUser();
+        //policyBuilder.RequireClaim("Game");
+    });
+});
+
 builder.Services.AddAutoMapper(typeof(ShopUserProfile), typeof(RoleProfile));
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    await BrandSeeder.Seed(scope.ServiceProvider, app.Environment);
+    await CategorySeeder.Seed(scope.ServiceProvider, app.Environment);
+}
 
 app.UseStaticFiles();
 app.UseDefaultFiles();

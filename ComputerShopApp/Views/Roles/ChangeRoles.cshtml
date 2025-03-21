@@ -11,9 +11,9 @@
 
 <form method="post">
     <input type="hidden" asp-for="Id" />
-    @foreach (var role in Model.AllRoles)
+    @foreach (var role in Model.AllRoles!)
     {
-        <input type="checkbox" name="roles[]" value="@(Model.UserRoles.Contains(role.Name!))" />
+        <input type="checkbox" name="roles[]" value="@role.Name" @(Model.UserRoles!.Contains(role.Name!) ? "checked" : "") />
         <span>@role.Name</span><br />
     }
     <div class="form-group">

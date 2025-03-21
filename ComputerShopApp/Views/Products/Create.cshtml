@@ -1,0 +1,40 @@
+﻿@using ComputerShopApp.Models.ViewModels.Shop
+@model ProductViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<form asp-action="Create" method="post" class="form-control">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="ProductDTO.Name" class="control-label"></label>
+        <input asp-for="ProductDTO.Name" class="form-control" />
+        <span asp-validation-for="ProductDTO.Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ProductDTO.Description" class="control-label"></label>
+        <input asp-for="ProductDTO.Description" class="form-control" />
+        <span asp-validation-for="ProductDTO.Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ProductDTO.Price" class="control-label"></label>
+        <input asp-for="ProductDTO.Price" class="form-control" />
+        <span asp-validation-for="ProductDTO.Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ProductDTO.BrandId" class="control-label"></label>
+        <select asp-for="ProductDTO.BrandId" asp-items="@Model.BrandList" class="form-control"></select>
+        <span asp-validation-for="ProductDTO.BrandId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ProductDTO.CategoryId" class="control-label"></label>
+        <select asp-for="ProductDTO.CategoryId" asp-items="@Model.CategoryList" class="form-control"></select>
+        <span asp-validation-for="ProductDTO.CategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-action="Index">Back to list</a>
+    </div>
+</form>

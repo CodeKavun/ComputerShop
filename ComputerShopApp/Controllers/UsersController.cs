@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using ComputerShopApp.Data;
 using ComputerShopApp.Models.DTO.Users;
+using ComputerShopApp.Models.ViewModels.Claims;
 using ComputerShopApp.Models.ViewModels.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -119,6 +121,24 @@ namespace ComputerShopApp.Controllers
 
             await userManager.DeleteAsync(shopUser);
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> ShowClaims(string? id)
+        {
+            if (id == null) return NotFound();
+
+            ShopUser? shopUser = await userManager.FindByIdAsync(id);
+            if (shopUser == null) return NotFound();
+
+            IList<Claim> claims = await userManager.GetClaimsAsync(shopUser);
+            IndexClaimsViewModel viewModel = new IndexClaimsViewModel
+            {
+                Claims = claims,
+                UserName = shopUser.UserName!,
+                Email = shopUser.Email!
+            };
+
+            return View("../Claims/Index", viewModel);
         }
     }
 }
