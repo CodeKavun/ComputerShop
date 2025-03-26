@@ -1,0 +1,66 @@
+﻿@using ComputerShopApp.Models.ViewModels.Shop;
+@model CreateCategoryViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CategoryDTO.Name" class="control-label"></label>
+                <input asp-for="CategoryDTO.Name" class="form-control" />
+                <span asp-validation-for="CategoryDTO.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="CategoryDTO.ParentCategoryId" class="control-label"></label>
+                <select id="CategoryDTO.ParentCategoryId" name="parentCategoryId[]" class ="form-control" asp-items="@Model.ParentCategories"
+                onchange="getChildCategories(event)">
+                    <option value="@(null)">Nothing</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+@section Scripts {
+    <script>
+        async function getChildCategories(e) {
+            let parentCategoryId = e.target.value;
+            let resp = await fetch(`/categories/getchildcategories/${parentCategoryId}`, { method: "GET" });
+
+            let firstChilds = document.getElementById("firstLevelChilds");
+
+            if (resp.ok === true) {
+                let text = await resp.text();
+                let d1 = document.createElement("div");
+                d1.innerHTML = text;
+
+                let firstSelectDiv = e.target.parentElement;
+                d1.firstChild.id = "firstLevelChilds";
+
+                if (firstChilds) {
+                    firstSelectDiv.nextElementSibling.replaceWith(d1.firstChild);
+                } else {
+                    firstSelectDiv.after(d1.firstChild);
+                }
+            } else {
+                if (firstChilds) {
+                    firstChilds.remove();
+                }
+            }
+        }
+    </script>
+}

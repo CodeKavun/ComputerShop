@@ -11,12 +11,12 @@ namespace ComputerShopApp.Models.DTO.Shop
         public string Description { get; set; } = default!;
         public double Price { get; set; }
         [Display(Name = "Images")]
-        public ICollection<ProductImage> ProductImages { get; set; } = default!;
+        public ICollection<ProductImage>? ProductImages { get; set; } = default!;
         public int BrandId { get; set; }
         [Display(Name = "Brand")]
-        public BrandDTO BrandDTO { get; set; } = default!;
+        public BrandDTO? BrandDTO { get; set; } = default!;
         public int CategoryId { get; set; }
         [Display(Name = "Category")]
-        public CategoryDTO CategoryDTO { get; set; } = default!;
+        public CategoryDTO? CategoryDTO { get; set; } = default!;
     }
 }

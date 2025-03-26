@@ -12,7 +12,7 @@ namespace ComputerShopDomainLibrary
         public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
         public double Price { get; set; }
-        public ICollection<ProductImage> ProductImages { get; set; } = default!;
+        public ICollection<ProductImage>? ProductImages { get; set; } = default!;
         public int BrandId { get; set; }
         public Brand Brand { get; set; } = default!;
         public int CategoryId { get; set; }

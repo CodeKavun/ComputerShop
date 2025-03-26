@@ -7,30 +7,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ComputerShopApp.Data;
 using ComputerShopDomainLibrary;
-using AutoMapper;
 using ComputerShopApp.Models.ViewModels.Shop;
+using AutoMapper;
 
 namespace ComputerShopApp.Controllers
 {
-    public class ProductsController : Controller
+    public class CategoriesController : Controller
     {
         private readonly ShopContext _context;
         private readonly IMapper mapper;
 
-        public ProductsController(ShopContext context, IMapper mapper)
+        public CategoriesController(ShopContext context, IMapper mapper)
         {
             _context = context;
             this.mapper = mapper;
         }
 
-        // GET: Products
+        // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var shopContext = _context.Products.Include(p => p.Brand).Include(p => p.Category);
+            var shopContext = _context.Categories.Include(c => c.ParentCategory);
             return View(await shopContext.ToListAsync());
         }
 
-        // GET: Products/Details/5
+        // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,51 +38,55 @@ namespace ComputerShopApp.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.Brand)
-                .Include(p => p.Category)
+            var category = await _context.Categories
+                .Include(c => c.ParentCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(category);
         }
 
-        // GET: Products/Create
-        public IActionResult Create()
+        // GET: Categories/Create
+        public async Task<IActionResult> Create()
         {
-            CreateProductViewModel viewModel = new CreateProductViewModel
+            var categories = await _context.Categories.Where(c => c.ParentCategoryId == null).ToListAsync();
+
+            CreateCategoryViewModel viewModel = new CreateCategoryViewModel
             {
-                BrandList = new SelectList(_context.Brands, "Id", "Name"),
-                CategoryList = new SelectList(_context.Categories, "Id", "Name")
+                ParentCategories = new SelectList(categories, "Id", "Name")
             };
+
             return View(viewModel);
         }
 
-        // POST: Products/Create
+        // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateProductViewModel viewModel)
+        public async Task<IActionResult> Create(CreateCategoryViewModel viewModel, int?[] parentCategoryId)
         {
             if (ModelState.IsValid)
             {
-                Product product = mapper.Map<Product>(viewModel.ProductDTO);
-                _context.Add(product);
+                parentCategoryId = parentCategoryId.Where(item => item.HasValue).ToArray();
+
+                Category category = mapper.Map<Category>(viewModel.CategoryDTO);
+
+                if (parentCategoryId.Length > 0)
+                    category.ParentCategoryId = parentCategoryId[parentCategoryId.Length - 1];
+
+                _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            viewModel.BrandList = new SelectList(_context.Brands, "Id", "Name", viewModel.ProductDTO.BrandId);
-            viewModel.CategoryList = new SelectList(_context.Categories, "Id", "Name", viewModel.ProductDTO.CategoryId);
-
+            viewModel.ParentCategories = new SelectList(_context.Categories, "Id", "Name", viewModel.CategoryDTO.ParentCategoryId);
             return View(viewModel);
         }
 
-        // GET: Products/Edit/5
+        // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,24 +94,23 @@ namespace ComputerShopApp.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
             {
                 return NotFound();
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Country", product.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
+            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
+            return View(category);
         }
 
-        // POST: Products/Edit/5
+        // POST: Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,BrandId,CategoryId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ParentCategoryId")] Category category)
         {
-            if (id != product.Id)
+            if (id != category.Id)
             {
                 return NotFound();
             }
@@ -116,12 +119,12 @@ namespace ComputerShopApp.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!CategoryExists(category.Id))
                     {
                         return NotFound();
                     }
@@ -132,12 +135,11 @@ namespace ComputerShopApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Country", product.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
+            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
+            return View(category);
         }
 
-        // GET: Products/Delete/5
+        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,36 +147,45 @@ namespace ComputerShopApp.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.Brand)
-                .Include(p => p.Category)
+            var category = await _context.Categories
+                .Include(c => c.ParentCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(category);
         }
 
-        // POST: Products/Delete/5
+        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            var category = await _context.Categories.FindAsync(id);
+            if (category != null)
             {
-                _context.Products.Remove(product);
+                _context.Categories.Remove(category);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private bool CategoryExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return _context.Categories.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> GetChildCategories(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var categories = await _context.Categories.Where(c => c.ParentCategoryId == id).ToListAsync();
+            if (!categories.Any()) return NotFound();
+
+            return PartialView("_ChildCategories", categories);
         }
     }
 }

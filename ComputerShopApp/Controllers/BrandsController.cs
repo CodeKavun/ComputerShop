@@ -50,6 +50,7 @@ namespace ComputerShopApp.Controllers
         }
 
         // GET: Brands/Create
+        //[Authorize(Policy = "hasMore18YO")]
         public IActionResult Create()
         {
             return View();

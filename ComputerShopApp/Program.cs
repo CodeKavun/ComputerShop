@@ -1,5 +1,7 @@
 using ComputerShopApp.Data;
 using ComputerShopApp.Profiles;
+using ComputerShopApp.Requirements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,9 @@ builder.Services.AddIdentity<ShopUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
 })
     .AddEntityFrameworkStores<ShopContext>();
+
+builder.Services.AddScoped<IAuthorizationRequirement, MinimalAgeRequirement>();
+builder.Services.AddScoped<IAuthorizationHandler, MinimalAgeAuthorizationHandler>();
 
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
@@ -30,11 +35,15 @@ builder.Services.AddAuthorization(configure =>
     {
         policyBuilder.RequireRole("manager");
         policyBuilder.RequireAuthenticatedUser();
-        //policyBuilder.RequireClaim("Game");
+    });
+    configure.AddPolicy("isMore18YO", policyBuilder =>
+    {
+        policyBuilder.RequireRole("mananger");
+        policyBuilder.Requirements.Add(new MinimalAgeRequirement());
     });
 });
 
-builder.Services.AddAutoMapper(typeof(ShopUserProfile), typeof(RoleProfile));
+builder.Services.AddAutoMapper(typeof(ShopUserProfile), typeof(RoleProfile), typeof(CategoryProfile), typeof(ProductImageProfile));
 
 builder.Services.AddControllersWithViews();
 
