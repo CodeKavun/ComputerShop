@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace ComputerShopDomainLibrary
 {
-    public class ProductImage
+    public class CartItem
     {
-        public int Id { get; set; }
-        public byte[] ImageData { get; set; } = default!;
-        public int ProductId { get; set; }
         public Product Product { get; set; } = default!;
+        public int Count { get; set; }
+        public double TotalPrice => Product.Price * Count;
     }
 }

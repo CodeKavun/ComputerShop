@@ -41,6 +41,7 @@ namespace ComputerShopApp.Controllers
             var product = await _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
+                .Include(p => p.ProductImages)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

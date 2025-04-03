@@ -1,0 +1,44 @@
+﻿@using ComputerShopDomainLibrary
+@using ComputerShopApp.Models.ViewModels.Shop
+@model CartIndexViewModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>My cart</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Price per product</th>
+            <th>Amount</th>
+            <th>Total Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (CartItem cartItem in Model.Cart.CartItems)
+    {
+        <tr>
+            <td>@cartItem.Product.Name</td>
+            <td>@cartItem.Product.Price</td>
+            <td>@cartItem.Count</td>
+            <td>@cartItem.TotalPrice</td>
+            <td>
+                <form asp-action="RemoveFromCart" method="post">
+                    <input type="hidden" name="id" value="@cartItem.Product.Id" />
+                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                    <button type="submit" class="btn btn-outline-secondary">Remove</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4" class="text-end">Total:</th>
+            <th>@Model.Cart.GetTotalPrice()</th>
+        </tr>
+    </tfoot>
+</table>

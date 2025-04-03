@@ -1,4 +1,5 @@
 using ComputerShopApp.Data;
+using ComputerShopApp.Infrostructures.ModelBinderProviders;
 using ComputerShopApp.Profiles;
 using ComputerShopApp.Requirements;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,12 @@ builder.Services.AddAuthorization(configure =>
 
 builder.Services.AddAutoMapper(typeof(ShopUserProfile), typeof(RoleProfile), typeof(CategoryProfile), typeof(ProductImageProfile));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddControllersWithViews(options => options.ModelBinderProviders.Insert(0, new CartModelBinderProvider()));
 
 var app = builder.Build();
 
@@ -60,6 +66,8 @@ app.UseDefaultFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 

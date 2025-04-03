@@ -23,7 +23,7 @@ namespace ComputerShopApp.Controllers
         // GET: ProductImages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ProductImages.ToListAsync());
+            return View(await _context.ProductImages.Include(item => item.Product).ToListAsync());
         }
 
         // GET: ProductImages/Details/5
@@ -86,7 +86,7 @@ namespace ComputerShopApp.Controllers
                         ProductImage image = new ProductImage
                         {
                             ImageData = ms.ToArray(),
-                            PeoductId = viewModel.SelectedProductId
+                            ProductId = viewModel.SelectedProductId
                         };
 
                         _context.ProductImages.Add(image);
@@ -204,6 +204,27 @@ namespace ComputerShopApp.Controllers
         private bool ProductImageExists(int id)
         {
             return _context.ProductImages.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> GetProducts(int? brandId, int? categoryId)
+        {
+            IEnumerable<Brand> brands = await _context.Brands.ToListAsync();
+            IEnumerable<Category> categories = await _context.Categories.ToListAsync();
+            IQueryable<Product> products = _context.Products;
+
+            if (categoryId != null) products = products.Where(p => p.CategoryId == categoryId);
+            if (brandId != null) products = products.Where(p => p.BrandId == brandId);
+
+            CreateImageViewModel viewModel = new CreateImageViewModel
+            {
+                BrandsList = new SelectList(brands, "Id", "Name", brandId),
+                CategoriesList = new SelectList(categories, "Id", "Name", categoryId),
+                SelectedBrandId = brandId,
+                SelectedCategoryId = categoryId,
+                ProductsList = new SelectList(products, "Id", "Name")
+            };
+
+            return PartialView("_SelectProductBlock", viewModel);
         }
     }
 }
